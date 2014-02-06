@@ -1,0 +1,20 @@
+{
+  "name": "frntndr",
+  "version": "0.0.1",
+  "description": "frntndr cli tool",
+  "main": "cli.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/branneman/frntndr-npm.git"
+  },
+  "keywords": [
+    "frntndr",
+    "cli"
+  ],
+  "author": "Bran van der Meer <branmovic@gmail.com> (http://bran.name/)",
+  "license": "http://creativecommons.org/licenses/by/4.0/",
+  "bugs": {
+    "url": "https://github.com/branneman/frntndr-npm/issues"
+  },
+  "homepage": "https://github.com/branneman/frntndr-npm"
+}
