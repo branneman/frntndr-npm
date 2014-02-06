@@ -12,7 +12,7 @@
     "cli"
   ],
   "author": "Bran van der Meer <branmovic@gmail.com> (http://bran.name/)",
-  "license": "http://creativecommons.org/licenses/by/4.0/",
+  "license": "CC-BY-4.0",
   "bugs": {
     "url": "https://github.com/branneman/frntndr-npm/issues"
   },
