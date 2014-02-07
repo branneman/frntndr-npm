@@ -4,33 +4,124 @@
 
 process.title = 'frntndr';
 
-// External libs
-var fs     = require('fs');
-var path   = require('path');
-var https  = require('https');
-var AdmZip = require('adm-zip');
+// External dependencies
+var parseArgs = require('minimist');
+var colors    = require('colors');
+var async     = require('async');
+var fs        = require('fs');
+var path      = require('path');
+var https     = require('https');
+var AdmZip    = require('adm-zip');
 
-var names = {
-    url:  'https://codeload.github.com/branneman/frontend-library/zip/master',
-    temp: 'frntndr-latest.zip'
-};
+// Local dependencies
+var pkg        = require('../package.json');
+var getGitTags = require('../lib/frntndr-tags.js');
 
-// Download file
-var out = fs.createWriteStream(names.temp);
-https.get(names.url, function(res) {
-    res.pipe(out);
-    res.on('end', unzip);
+//
+// Option parsing
+//
+var argv = parseArgs(process.argv.slice(2), {
+    string: ['t', 'tag']
 });
+var allowedOptions = 'v version h help t tag'.split(' ');
+Object.keys(argv).forEach(function(key) {
+    if (key !== '_' && !~allowedOptions.indexOf(key)) {
+        printUsage('Unknown option: ' + key);
+    }
+});
+if (argv.v || argv.version) {
+    console.log(pkg.version);
+    process.exit();
+}
+if (argv._.length !== 1 || argv.t === true || argv.tag === true) {
+    printUsage();
+}
+var optDir = argv._[0];
+var optTag = argv.t || argv.tag;
+console.log('');
 
-// Unzip file
-function unzip() {
-    var zip = new AdmZip(names.temp);
+//
+// Control flow
+//
+async.waterfall([
+    getGitTags,
+    getGithubUrl,
+    downloadZip,
+    unzip,
+    unlink,
+    npmInstall
+], reporter);
+
+//
+// Print usage information to CLI and exit
+//
+function printUsage(err) {
+
+    console.log('');
+    if (err) {
+        console.log('  Error: '.red + err);
+        console.log('');
+    }
+    console.log('  Usage: '.bold + 'frntndr [options] <directory>');
+    console.log('');
+    console.log('  Options:'.bold);
+    console.log('');
+    console.log('    -t [tag], --tag [tag]    install specified older version');
+    console.log('    -h,       --help         output usage information');
+    console.log('    -v,       --version      output the version number');
+    console.log('');
+
+    process.exit(err ? -1 : 0);
+}
+
+//
+// Create url for downloading the zip directly from github
+//
+function getGithubUrl(tags, cb) {
+
+    var url = 'https://codeload.github.com/branneman/frontend-library/zip/';
+
+    if (optTag && !~tags.indexOf(optTag)) {
+        return cb('Tag \'' + optTag + '\' not found, available tags: ' + tags.join(', '));
+    }
+
+    var tag = optTag ? optTag : tags[0];
+
+    cb(null, url + tag);
+}
+
+//
+// Download
+//
+function downloadZip(url, cb) {
+
+    console.log('  Cloning tag...');
+
+    var tmpFile = '_frntndr.zip';
+    var out = fs.createWriteStream(tmpFile);
+
+    https.get(url, function(res) {
+        res.pipe(out);
+        res.on('end', function(err) {
+            cb(err, tmpFile);
+        });
+    });
+}
+
+//
+// Unzip
+//
+function unzip(tmpFile, cb) {
+
+    console.log('  Unzipping files...');
+
+    var zip = new AdmZip(tmpFile);
     var files = zip.getEntries();
 
     files.forEach(function(file) {
 
         var oldPath = file.entryName;
-        var newPath = oldPath.substr(24); // remove 'frontend-library-master' prefix
+        var newPath = oldPath.match(/^([^\/]*)\/(.*)/)[2]; // remove 'frntndr-[tag]' prefix
         if (newPath === '' || newPath.substr(-1) === '/') {
             return;
         }
@@ -39,6 +130,36 @@ function unzip() {
         zip.extractEntryTo(oldPath, './' + newDir, false, true);
     });
 
-    // Remove zip file
-    fs.unlink(names.temp);
+    cb(null, tmpFile);
+}
+
+//
+// Delete temporary file
+//
+function unlink(tmpFile, cb) {
+    console.log('  Removing temporary files...');
+    fs.unlink(tmpFile, cb);
+}
+
+//
+// Run `npm i` inside the directory
+// @todo implement
+//
+function npmInstall(cb) {
+    console.log('  Installing dependencies...' + ' Not implemented yet, run `npm i` manually.'.yellow);
+    cb();
+}
+
+//
+// Report results to CLI
+//
+function reporter(err, result) {
+
+    console.log('');
+    if (err) {
+        console.log('  Error:'.red, err);
+    } else {
+        console.log('  Finished.'.green, 'You can now start the development server.');
+    }
+    console.log('');
 }

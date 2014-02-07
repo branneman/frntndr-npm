@@ -2,7 +2,7 @@
   "name": "frntndr",
   "version": "0.0.2",
   "description": "frntndr cli tool",
-  "main": "cli.js",
+  "main": "bin/frntndr",
   "repository": {
     "type": "git",
     "url": "https://github.com/branneman/frntndr-npm.git"
@@ -25,6 +25,10 @@
   },
   "preferGlobal": true,
   "dependencies": {
+    "minimist": "0.0.5",
+    "colors": "~0.6.2",
+    "async": "~0.2.10",
+    "git-node": "~0.1.1",
     "adm-zip": "~0.4.4"
   }
 }
