@@ -1,6 +1,6 @@
 {
   "name": "frntndr",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "frntndr cli tool",
   "main": "bin/frntndr",
   "repository": {
