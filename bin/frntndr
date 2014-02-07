@@ -1,12 +1,10 @@
+#!/usr/bin/env node
+
 'use strict';
 
-/**
- * @todo
- *  - Throw error if the target directory is not empty
- *  - Get latest tag, instead of 'always master'
- *  - Allow downloading of specific tag
- */
+process.title = 'frntndr';
 
+// External libs
 var fs     = require('fs');
 var path   = require('path');
 var https  = require('https');
@@ -40,4 +38,7 @@ function unzip() {
 
         zip.extractEntryTo(oldPath, './' + newDir, false, true);
     });
+
+    // Remove zip file
+    fs.unlink(names.temp);
 }

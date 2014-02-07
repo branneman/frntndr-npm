@@ -20,6 +20,10 @@
     "url": "https://github.com/branneman/frntndr-npm/issues"
   },
   "homepage": "https://github.com/branneman/frntndr-npm",
+  "bin": {
+    "frntndr": "bin/frntndr"
+  },
+  "preferGlobal": true,
   "dependencies": {
     "adm-zip": "~0.4.4"
   }
