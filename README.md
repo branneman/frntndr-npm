@@ -1,3 +1,1 @@
-# frntndr
-
-Documentation: [http://frntndr.com/](http://frntndr.com/)
+### See [frntndr.com](http://frntndr.com/)
