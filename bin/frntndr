@@ -103,7 +103,7 @@ function createDirectory(cb) {
 //
 function getGithubUrl(tags, cb) {
 
-    var url = 'https://codeload.github.com/branneman/frontend-library/zip/';
+    var url = 'https://codeload.github.com/branneman/frntndr/zip/';
 
     if (optTag && !~tags.indexOf(optTag)) {
         return cb('Tag \'' + optTag + '\' not found, available tags: ' + tags.join(', '));
