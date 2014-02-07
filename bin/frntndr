@@ -10,6 +10,7 @@ var colors    = require('colors');
 var async     = require('async');
 var fs        = require('fs');
 var path      = require('path');
+var glob      = require('glob');
 var https     = require('https');
 var AdmZip    = require('adm-zip');
 
@@ -44,6 +45,7 @@ console.log('');
 // Control flow
 //
 async.waterfall([
+    createDirectory,
     getGitTags,
     getGithubUrl,
     downloadZip,
@@ -62,7 +64,7 @@ function printUsage(err) {
         console.log('  Error: '.red + err);
         console.log('');
     }
-    console.log('  Usage: '.bold + 'frntndr [options] <directory>');
+    console.log('  Usage: '.bold + 'frntndr [options] <target>');
     console.log('');
     console.log('  Options:'.bold);
     console.log('');
@@ -72,6 +74,27 @@ function printUsage(err) {
     console.log('');
 
     process.exit(err ? -1 : 0);
+}
+
+//
+// Optionally create and change into specified target directory
+//
+function createDirectory(cb) {
+
+    var isCurrentDir = path.resolve(optDir) === __dirname;
+    if (!isCurrentDir) {
+        if (!fs.existsSync(optDir)) {
+            fs.mkdirSync(optDir);
+        }
+        process.chdir(optDir);
+    }
+
+    var isEmptyDir = !glob.sync('**').length;
+    if (!isEmptyDir) {
+        cb('Specified target directory is not empty');
+    } else {
+        cb();
+    }
 }
 
 //
@@ -155,7 +178,6 @@ function npmInstall(cb) {
 //
 function reporter(err, result) {
 
-    console.log('');
     if (err) {
         console.log('  Error:'.red, err);
     } else {

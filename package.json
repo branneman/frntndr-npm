@@ -27,6 +27,7 @@
   "dependencies": {
     "minimist": "0.0.5",
     "colors": "~0.6.2",
+    "glob": "~3.2.8",
     "async": "~0.2.10",
     "git-node": "~0.1.1",
     "adm-zip": "~0.4.4"
