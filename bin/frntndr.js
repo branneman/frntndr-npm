@@ -214,7 +214,7 @@ function gitInit(cb) {
 //
 function npmInstall(cb) {
 
-    console.log('  Installing dependencies... (this may take a while)');
+    console.log('  Installing npm dependencies... (this may take a while)');
 
     child_process.exec('npm i', function(err) {
         if (err) {
