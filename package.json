@@ -1,8 +1,8 @@
 {
   "name": "frntndr",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "frntndr cli tool",
-  "main": "bin/frntndr",
+  "main": "bin/frntndr.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/branneman/frntndr-npm.git"
@@ -21,7 +21,7 @@
   },
   "homepage": "http://frntndr.com/",
   "bin": {
-    "frntndr": "bin/frntndr.js"
+    "frntndr": "./bin/frntndr.js"
   },
   "preferGlobal": true,
   "dependencies": {
