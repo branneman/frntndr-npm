@@ -118,7 +118,7 @@ function checkPrerequisites(optDir, optTag, cb) {
                     return value.split('\t')[1].split('/')[2];
                 });
 
-                if (!~tags.indexOf(optTag)) {
+                if (optTag && !~tags.indexOf(optTag)) {
                     return cb('Specified tag not found. Available tags: ' + tags.join(', '));
                 }
 
@@ -158,11 +158,16 @@ function gitClone(optDir, optTag, cb) {
 //
 function gitTag(optTag, cb) {
 
-    console.log('  Checking out tag...');
+    // No tag? Stay on master.
+    if (!optTag) {
+        return cb();
+    }
+
+    console.log('  Checking out tag ' + optTag + '...');
 
     child_process.exec('git checkout ' + optTag, function(err) {
         if (err) {
-            return cb('Git returned an error, a new repository has not been initialised.');
+            return cb('Git returned an error, the correct tag has not been checked out.');
         }
         cb();
     });

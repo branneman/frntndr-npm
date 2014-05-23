@@ -1,6 +1,6 @@
 {
   "name": "frntndr",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "frntndr cli tool",
   "main": "bin/frntndr",
   "repository": {
@@ -19,7 +19,7 @@
   "bugs": {
     "url": "https://github.com/branneman/frntndr-npm/issues"
   },
-  "homepage": "https://github.com/branneman/frntndr-npm",
+  "homepage": "http://frntndr.com/",
   "bin": {
     "frntndr": "bin/frntndr.js"
   },
