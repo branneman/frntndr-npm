@@ -29,7 +29,8 @@ async.waterfall([
     gitClone,
     gitTag,
     gitInit,
-    npmInstall
+    npmInstall,
+    bowerInstall
 ], reporter);
 
 //
@@ -219,6 +220,24 @@ function npmInstall(cb) {
     child_process.exec('npm i', function(err) {
         if (err) {
             return cb('npm returned an error, see ' + 'npm-debug.log'.bold + '. Then run `npm install` manually.');
+        }
+        cb();
+    });
+}
+
+//
+// Run `bower i` inside the directory
+//
+function bowerInstall(cb) {
+
+    // Only run `bower i` when bower.json is present
+    if (!fs.existsSync('src/static/js/bower.json')) return cb();
+
+    console.log('  Installing bower dependencies...');
+
+    child_process.exec('bower i', {cwd: 'src/static/js/'}, function(err) {
+        if (err) {
+            return cb('bower returned an error. Run `bower install` manually inside `src/static/js/`.');
         }
         cb();
     });
