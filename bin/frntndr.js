@@ -30,6 +30,7 @@ async.waterfall([
     gitTag,
     gitInit,
     npmInstall,
+    bundleInstall,
     bowerInstall
 ], reporter);
 
@@ -83,10 +84,64 @@ function checkPrerequisites(optDir, optTag, cb) {
         function(cb) {
             async.parallel([
                 function(cb) { existsInPath('git', cb); },
-                function(cb) { existsInPath('git.exe', cb); },
+                function(cb) { existsInPath('git.exe', cb); }
             ], function(err, results) {
                 if (!~results.indexOf(true)) {
                     return cb('Git not found, is it installed and in your PATH?');
+                }
+                cb();
+            });
+        },
+
+        // Ruby must be installed
+        function(cb) {
+            async.parallel([
+                function(cb) { existsInPath('ruby', cb); },
+                function(cb) { existsInPath('ruby.exe', cb); }
+            ], function(err, results) {
+                if (!~results.indexOf(true)) {
+                    return cb('Ruby not found, is it installed?');
+                }
+                cb();
+            });
+        },
+
+        // Bundler must be installed
+        function(cb) {
+            async.parallel([
+                function(cb) { existsInPath('bundle', cb); },
+                function(cb) { existsInPath('bundle.bat', cb); }
+            ], function(err, results) {
+                if (!~results.indexOf(true)) {
+                    return cb('Bundler not found, is it installed? Install with: `gem install bundler`');
+                }
+                cb();
+            });
+        },
+
+        // Bower must be installed
+        function(cb) {
+            async.parallel([
+                function(cb) { existsInPath('bower', cb); },
+                function(cb) { existsInPath('bower.bat', cb); },
+                function(cb) { existsInPath('bower.cmd', cb); }
+            ], function(err, results) {
+                if (!~results.indexOf(true)) {
+                    return cb('Bower not found, is it installed? Install with: `npm install -g bower`');
+                }
+                cb();
+            });
+        },
+
+        // Grunt CLI must be installed
+        function(cb) {
+            async.parallel([
+                function(cb) { existsInPath('grunt', cb); },
+                function(cb) { existsInPath('grunt.bat', cb); },
+                function(cb) { existsInPath('grunt.cmd', cb); }
+            ], function(err, results) {
+                if (!~results.indexOf(true)) {
+                    return cb('Grunt not found, is it installed? Install with: `npm install -g grunt-cli`');
                 }
                 cb();
             });
@@ -211,7 +266,7 @@ function gitInit(cb) {
 }
 
 //
-// Run `npm i` inside the directory
+// Run `npm install`
 //
 function npmInstall(cb) {
 
@@ -226,21 +281,49 @@ function npmInstall(cb) {
 }
 
 //
-// Run `bower i` inside the directory
+// Run `bundle install`
 //
-function bowerInstall(cb) {
+function bundleInstall(cb) {
 
-    // Only run `bower i` when bower.json is present
-    if (!fs.existsSync('src/static/js/bower.json')) return cb();
+    console.log('  Installing ruby dependencies... (this may take a while)');
 
-    console.log('  Installing bower dependencies...');
-
-    child_process.exec('bower i', {cwd: 'src/static/js/'}, function(err) {
+    child_process.exec('bundle install', function(err) {
         if (err) {
-            return cb('bower returned an error. Run `bower install` manually inside `src/static/js/`.');
+            return cb('bundle returned an error. Run `bundle install` manually.');
         }
         cb();
     });
+}
+
+//
+// Run `bower install`
+//
+function bowerInstall(cb) {
+
+    // frntndr >= v0.5
+    if (fs.existsSync('bower.json')) {
+        console.log('  Installing bower dependencies...');
+        child_process.exec('bower i', function(err) {
+            if (err) {
+                return cb('bower returned an error. Run `bower install` manually.');
+            }
+            cb();
+        });
+
+    // frntndr v0.4
+    } else if (fs.existsSync('src/static/js/bower.json')) {
+        console.log('  Installing bower dependencies...');
+        child_process.exec('bower i', {cwd: 'src/static/js/'}, function(err) {
+            if (err) {
+                return cb('bower returned an error. Run `bower install` manually inside `src/static/js/`.');
+            }
+            cb();
+        });
+
+    // frntndr <= v0.3
+    } else {
+        return cb();
+    }
 }
 
 //
